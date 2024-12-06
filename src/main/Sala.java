@@ -11,16 +11,14 @@ public class Sala {
 	private String nombre;
 	private int tamanio = 4;
 
-	private List<String> listaParticipantes;
-	private List<BufferedWriter> listaWriters;
-	private List<BufferedReader> listaReaders;
+	private List<String> listaParticipantes = new ArrayList<>(tamanio);
+	private List<BufferedWriter> listaWriters = new ArrayList<>(tamanio);
+	private List<BufferedReader> listaReaders = new ArrayList<>(tamanio);
 	private CyclicBarrier barrera = new CyclicBarrier(tamanio);
+	private JuegoPinturillo juegoPinturillo = new JuegoPinturillo(this);
 
 	public Sala(String nombre) {
 		this.nombre = nombre;
-		this.listaParticipantes = new ArrayList<>(tamanio);
-		this.listaWriters = new ArrayList<>(tamanio);
-		this.listaReaders = new ArrayList<>(tamanio);
 	}
 
 	public synchronized List<String> getListaParticipantes() {
@@ -60,6 +58,10 @@ public class Sala {
 			listaParticipantes.remove(participante);
 			listaWriters.remove(salida);
 			listaReaders.remove(entrada);
+	}
+	
+	public void iniciarPartida() {
+		this.juegoPinturillo.iniciarPartida();
 	}
 
 

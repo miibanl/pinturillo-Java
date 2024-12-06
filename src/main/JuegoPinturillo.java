@@ -18,9 +18,9 @@ public class JuegoPinturillo {
 	private static final int VECES_DIBUJAN = 1; // Numero de veces que dibuja cada jugador
 	private static final int TAMANIO_SALA = 4; // Numero de jugadores en la sala
 	private Sala sala;
-	private List<BufferedWriter> listaWriters;
-	private List<BufferedReader> listaReaders;
-	private List<Integer> listaPuntuaciones;
+	private List<BufferedWriter> listaWriters = new ArrayList<>(TAMANIO_SALA);
+	private List<BufferedReader> listaReaders = new ArrayList<>(TAMANIO_SALA);
+	private List<Integer> listaPuntuaciones = new ArrayList<>(TAMANIO_SALA);
 	private CyclicBarrier barrera = new CyclicBarrier(TAMANIO_SALA);
 
 	public static final List<String> PALABRAS = Arrays.asList("Casa", "Perro", "Avión", "Futbol", "Sol", "Flor",
@@ -34,14 +34,13 @@ public class JuegoPinturillo {
 
 	public JuegoPinturillo(Sala sala) {
 		this.sala = sala;
-		this.listaPuntuaciones = new ArrayList<>(TAMANIO_SALA);
 		for (int i = 0; i < TAMANIO_SALA; i++) {
 			listaPuntuaciones.add(0);
 		}
 
 	}
 
-	public void iniciarPartida(List<Sala> listaSalas) {
+	public void iniciarPartida() {
 		// Solo un hilo puede ejecutar esta parte a la vez (Intentará obtener el lock
 		// sin bloquearse, esto asegura una única ejecución de la partida)
 		if (lock.tryLock()) {
@@ -53,7 +52,7 @@ public class JuegoPinturillo {
 
 				System.out.println("Iniciando la partida...");
 
-				int turnoActual = 0;
+				int turnoActual = 0; // El jugador que toma el rol de pintor
 				Random random = new Random();
 				String palabra;
 				int vuelta = 1;
@@ -74,12 +73,20 @@ public class JuegoPinturillo {
 
 					// Bucle de recibimiento y envio de coordenadas del dibujo
 					String punto;
+					int contador = 0; // Para reducir el número de flush
 					while ((punto = listaReaders.get(turnoActual).readLine()) != null) {
 						// Conexion con los escritores
 						for (int i = 0; i < listaWriters.size(); i++) {
 							if (i != turnoActual) {
 								listaWriters.get(i).write(punto + "\n");
-								listaWriters.get(i).flush();
+								
+								if(punto.equals("fin") || punto.equals("fin linea")){
+									listaWriters.get(i).flush();
+								} else if(contador == 90) {
+									listaWriters.get(i).flush();
+								} else {
+									contador++;
+								}
 							}
 						}
 						// Si hemos llegado al final salimos del bucle
@@ -88,13 +95,10 @@ public class JuegoPinturillo {
 						}
 					}
 
-					// Guardamos las puntuaciones a los escritores
-					// Conexion con los escritores
+					// Guardamos las puntuaciones
 					for (int i = 0; i < listaReaders.size(); i++) {
-						if (i != turnoActual) {
-							int puntuacion = Integer.parseInt(listaReaders.get(i).readLine());
-							listaPuntuaciones.set(i, listaPuntuaciones.get(i) + puntuacion);
-						}
+						int puntuacion = Integer.parseInt(listaReaders.get(i).readLine());
+						listaPuntuaciones.set(i, listaPuntuaciones.get(i) + puntuacion);
 					}
 
 					if (turnoActual == TAMANIO_SALA - 1) {
@@ -159,9 +163,6 @@ public class JuegoPinturillo {
 				e.printStackTrace();
 			}
 		}
-
-		// Si no podemos obtener el lock, el hilo espera a que se termine el juego
-
 	}
 
 }

@@ -12,12 +12,10 @@ public class HiloServidor implements Callable<String> {
 
 	private Socket cliente;
 	private List<Sala> listaSalas;
-	private List<JuegoPinturillo> listaJuegos;
 
-	public HiloServidor(Socket cliente, List<Sala> listaSalas, List<JuegoPinturillo> listaJuegos) {
+	public HiloServidor(Socket cliente, List<Sala> listaSalas) {
 		this.cliente = cliente;
 		this.listaSalas = listaSalas;
-		this.listaJuegos = listaJuegos;
 	}
 
 	@Override
@@ -115,8 +113,7 @@ public class HiloServidor implements Callable<String> {
 							// Los hilos esperan hasta que todos los jugadores estan listos
 							salaAux.getBarrera().await();
 							salaAux.getBarrera().reset();
-							JuegoPinturillo juegoPinturillo = listaJuegos.get(Integer.parseInt(sala.split(" ")[1])-1);
-							juegoPinturillo.iniciarPartida(listaSalas);
+							salaAux.iniciarPartida();
 							// Todos los hilos esperan hasta que el hilo principal termine la ejecucion del
 							// juego
 							break;

@@ -112,6 +112,9 @@ public class Cliente {
 								latch.await();
 						        JOptionPane.showMessageDialog(frame, "¡El tiempo ha terminado!", "Tiempo agotado", JOptionPane.INFORMATION_MESSAGE);
 								frame.dispose();
+								// El pintor también envia puntuación para que la partida no siga sin él
+								salida.write(0+"\n");
+								salida.flush();
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
@@ -177,15 +180,15 @@ public class Cliente {
 	
 	private static void crearBotones(JFrame frame, PanelPintor panelPintor) {
 		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new FlowLayout()); // Diseño para los botones
+		buttonPanel.setLayout(new FlowLayout());
 
-		// Crear botones con colores
+		// Crear botones
 		JButton blackButton = new JButton("Negro");
 		JButton redButton = new JButton("Rojo");
 		JButton blueButton = new JButton("Azul");
 		JButton greenButton = new JButton("Verde");
 
-		// Opcional: Establecer colores en los botones
+		// Poner los colores
 		blackButton.setBackground(Color.BLACK);
 		blackButton.setForeground(Color.WHITE);
 		redButton.setBackground(Color.RED);
@@ -195,13 +198,13 @@ public class Cliente {
 		greenButton.setBackground(Color.GREEN);
 		greenButton.setForeground(Color.BLACK);
 
-		// Agregar botones al panel de botones
+		// Añadir botones al panel de botones
 		buttonPanel.add(blackButton);
 		buttonPanel.add(redButton);
 		buttonPanel.add(blueButton);
 		buttonPanel.add(greenButton);
 
-		// Agregar el panel de botones al JFrame
+		// Añadir el panel de botones al JFrame
 		frame.add(buttonPanel, BorderLayout.SOUTH);
 		
 		blackButton.addActionListener(e -> panelPintor.setColor(Color.BLACK));

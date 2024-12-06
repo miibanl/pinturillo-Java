@@ -33,11 +33,6 @@ public class Servidor {
 			listaSalas.add(sala2);
 			listaSalas.add(sala3);
 			listaSalas.add(sala4);
-			List<JuegoPinturillo> listaJuegos = new ArrayList<>();
-			listaJuegos.add(new JuegoPinturillo(sala1));
-			listaJuegos.add(new JuegoPinturillo(sala2));
-			listaJuegos.add(new JuegoPinturillo(sala3));
-			listaJuegos.add(new JuegoPinturillo(sala4));
 
 			
 
@@ -46,10 +41,9 @@ public class Servidor {
 				Socket cliente = servidor.accept();
 				System.out.println("Cliente conectado: " + cliente.getInetAddress()+":"+cliente.getPort());
 
-				HiloServidor tarea = new HiloServidor(cliente, listaSalas, listaJuegos);
+				HiloServidor tarea = new HiloServidor(cliente, listaSalas);
 
-				Future<String> resultado = poolDeHilos.submit(tarea); // Usar submit en lugar de execute para un
-																		// Callable/Future
+				Future<String> resultado = poolDeHilos.submit(tarea);
 				// Manejar el resultado en otro hilo
 				poolResultados.submit(() -> {
 					try {
